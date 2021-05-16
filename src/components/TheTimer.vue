@@ -19,7 +19,7 @@ export default {
         },
         Stop: {
           nextName: 'Start',
-          action: 'stopTime'
+          action: 'signalFinished'
         }
       },
       delta: 1
@@ -43,8 +43,8 @@ export default {
       return this.currentState
     },
     getTimeRemaining (format = true) {
-      if (!this.secondsRemaining) {
-        this.secondsRemaining = this.seconds
+      if (this.secondsRemaining == null) {
+        this.resetTimer()
       }
       if (format) {
         var seconds = this.secondsRemaining
@@ -71,14 +71,29 @@ export default {
       this.currentState = this.states[this.currentState].nextName
       this[this.states[this.currentState].action]()
     },
+    startClock () {
+      setTimeout(this.changeTime, 1000)
+    },
     changeTime () {
       if (this.currentState === 'Start') {
+        if (this.secondsRemaining === 0) {
+          this.resetTimer()
+          this.startClock()
+          return
+        }
         this.secondsRemaining -= 1
-        setTimeout(this.changeTime, 1000)
+        if (this.secondsRemaining <= 0) {
+          this.nextState()
+        } else {
+          this.startClock()
+        }
       }
     },
-    stopTime () {
-      console.log('stopTime')
+    signalFinished () {
+      this.$emit('timer-finished')
+    },
+    resetTimer () {
+      this.secondsRemaining = this.seconds
     }
   },
   computed: {
