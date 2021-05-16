@@ -2,6 +2,7 @@
   <div class="timer">
     <label :class="{ blink: isBlinking }">{{ getTimeRemaining() }}</label><br/>
     <button @click="nextState">{{ getNextState }}</button>
+    <button @click="interruptTimer">Reset</button>
   </div>
 </template>
 
@@ -97,6 +98,11 @@ export default {
     resetTimer () {
       this.isBlinking = false
       this.secondsRemaining = this.seconds
+    },
+    interruptTimer () {
+      this.$emit('timer-interrupted')
+      this.state = 'Stop'
+      this.resetTimer()
     }
   },
   computed: {
