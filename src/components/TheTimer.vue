@@ -1,6 +1,6 @@
 <template>
   <div class="timer">
-    <label>{{ getTimeRemaining() }}</label><br/>
+    <label :class="{ blink: isBlinking }">{{ getTimeRemaining() }}</label><br/>
     <button @click="nextState">{{ getNextState }}</button>
   </div>
 </template>
@@ -22,13 +22,14 @@ export default {
           action: 'signalFinished'
         }
       },
-      delta: 1
+      delta: 1,
+      isBlinking: false
     }
   },
   props: {
     seconds: {
       type: Number,
-      default: 60
+      default: 6
     },
     beginningState: {
       type: String,
@@ -91,8 +92,10 @@ export default {
     },
     signalFinished () {
       this.$emit('timer-finished')
+      this.isBlinking = true
     },
     resetTimer () {
+      this.isBlinking = false
       this.secondsRemaining = this.seconds
     }
   },
@@ -105,4 +108,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
 </style>
